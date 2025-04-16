@@ -37,5 +37,12 @@ public class DirectoryController {
     public String getFileContent(@RequestParam("filePath") String filePath) throws IOException {
         return directoryService.getFileContent(filePath).replaceAll("\n", "<br>").replaceAll(" ", "&nbsp;");
     }
+    //to load all the folders
+    @GetMapping("/load-folders")
+    @ResponseBody
+    public List<String> loadFolders(@RequestParam("path") String path) {
+        return directoryService.getAllFolders(path);
+    }
+
 
 }

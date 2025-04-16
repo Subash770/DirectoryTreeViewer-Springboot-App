@@ -51,15 +51,39 @@
 <h2>Select Folder & Filter</h2>
 <form action="/view-folder" method="post">
     <label>Directory Path:</label>
-    <input type="text" name="path" placeholder="C:/Users/LENOVO/Downloads/parser" required/>
+    <input type="text" id="pathInput" name="path" placeholder="C:/Users/LENOVO/Downloads/parser" required/>
 
     <label>Select Folders:</label>
-    <select name="selectedFolders" multiple size="4">
-        <option th:each="f : ${folders}" th:value="${f}" th:text="${f}"></option>
+    <select id="folderDropdown" name="selectedFolders" multiple size="6">
+        <!-- Will be filled dynamically -->
     </select>
 
     <button type="submit">View Files</button>
 </form>
+<!--To fetch the folders dynamically from the path-->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const pathInput = document.getElementById("pathInput");
+        const folderDropdown = document.getElementById("folderDropdown");
+
+        pathInput.addEventListener("change", () => {
+            const path = pathInput.value;
+            if (path) {
+                fetch(`/load-folders?path=${encodeURIComponent(path)}`)
+                    .then(response => response.json())
+                    .then(folders => {
+                        folderDropdown.innerHTML = "";
+                        folders.forEach(folder => {
+                            const option = document.createElement("option");
+                            option.value = folder;
+                            option.textContent = folder;
+                            folderDropdown.appendChild(option);
+                        });
+                    });
+            }
+        });
+    });
+</script>
 
 </body>
 </html>

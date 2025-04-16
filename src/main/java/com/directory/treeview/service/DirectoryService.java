@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -123,5 +124,21 @@ public class DirectoryService {
         if (!file.exists() || file.isDirectory()) return "Invalid file!";
         return Files.readString(file.toPath());
     }
+
+    public List<String> getAllFolders(String path) {
+        File dir = new File(path);
+        if (!dir.exists() || !dir.isDirectory()) {
+            return List.of(); // return empty list
+        }
+
+        File[] folders = dir.listFiles(File::isDirectory);
+        if (folders != null) {
+            return Arrays.stream(folders)
+                    .map(File::getName)
+                    .toList();
+        }
+        return List.of();
+    }
+
 
 }
