@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Code Suggestions</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: "Segoe UI", sans-serif;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            vertical-align: top;
+        }
+        th {
+            background-color: #f2f2f2;
+            text-align: left;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+    </style>
+</head>
+<body>
+<h2>Code Suggestions</h2>
+
+<table>
+    <thead>
+    <tr>
+        <th>File</th>
+        <th>Line #</th>
+        <th>Version 1 (Unoptimized)</th>
+        <th>Version 2 (Optimized)</th>
+        <th>Suggestion</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="s : ${suggestions}">
+        <td th:text="${s.fileName}">filename.java</td>
+        <td th:text="${s.lineNumber}">42</td>
+        <td><pre th:text="${s.originalLine}">original line here</pre></td>
+        <td><pre th:text="${s.optimizedLine}">optimized line here</pre></td>
+        <td th:text="${s.message}">suggestion text</td>
+    </tr>
+    </tbody>
+</table>
+
+<a href="/" style="display: inline-block; margin-top: 20px;">← Back to Home</a>
+</body>
+</html>
