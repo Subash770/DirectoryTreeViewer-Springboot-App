@@ -1,13 +1,65 @@
-<form action="/view-folder" method="post" xmlns:th="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Select Folder</title>
+    <style>
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background-color: #f9f9f9;
+            padding: 40px;
+        }
+        h2 {
+            color: #333;
+        }
+        form {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 600px;
+            margin: auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+            color: #555;
+        }
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Select Folder & Filter</h2>
+<form action="/view-folder" method="post">
     <label>Directory Path:</label>
-    <input type="text" name="path" placeholder="C:/Users/LENOVO/Downloads/parser" size="60" required/>
-    <br><br>
+    <input type="text" name="path" placeholder="C:/Users/LENOVO/Downloads/parser" required/>
 
     <label>Select Folders:</label>
     <select name="selectedFolders" multiple size="4">
         <option th:each="f : ${folders}" th:value="${f}" th:text="${f}"></option>
     </select>
-    <br><br>
 
     <button type="submit">View Files</button>
 </form>
+
+</body>
+</html>
