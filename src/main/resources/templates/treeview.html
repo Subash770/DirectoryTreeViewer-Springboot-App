@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Directory Tree</title>
+</head>
+<body>
+<h2>Directory Tree for: <span th:text="${path}"></span></h2>
+<div th:utext="${tree}"></div>
+
+<br><a href="/">Back</a>
+</body>
+</html>

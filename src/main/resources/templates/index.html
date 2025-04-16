@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Directory Tree Viewer</title>
+</head>
+<body>
+<h2>Enter Directory Path</h2>
+<form action="/view-tree" method="post">
+    <input type="text" name="path" placeholder="C:/Users/YourName/Documents" size="60" required/>
+    <button type="submit">View Tree</button>
+</form>
+</body>
+</html>
