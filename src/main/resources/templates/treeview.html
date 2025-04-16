@@ -1,12 +1,94 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Directory Tree</title>
+    <title>Filtered Java Tree View</title>
+    <style>
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background-color: #f9f9f9;
+            padding: 40px;
+        }
+        h2 {
+            color: #333;
+            text-align: center;
+        }
+        .tree-container {
+            max-width: 900px;
+            margin: auto;
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .folder-toggle, .file {
+            margin-left: 20px;
+            cursor: pointer;
+            padding: 4px 0;
+            transition: background 0.2s ease;
+        }
+        .folder-toggle:hover, .file:hover {
+            background-color: #f0f0f0;
+        }
+        .nested {
+            display: none;
+            margin-left: 20px;
+        }
+        .active {
+            display: block;
+        }
+        #fileContent {
+            white-space: pre-wrap;
+            border: 1px solid #ccc;
+            background-color: #fefefe;
+            padding: 15px;
+            margin-top: 30px;
+            border-radius: 5px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #007bff;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-<h2>Directory Tree for: <span th:text="${path}"></span></h2>
-<div th:utext="${tree}"></div>
 
-<br><a href="/">Back</a>
+<div class="tree-container">
+    <h2>Filtered Java Files</h2>
+    <div th:utext="${tree}"></div>
+    <div id="fileContent"></div>
+
+    <a href="/">← Back to Folder Selection</a>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".folder-toggle").forEach(folder => {
+            folder.addEventListener("click", () => {
+                const nested = folder.nextElementSibling;
+                if (nested) nested.classList.toggle("active");
+            });
+        });
+
+        document.querySelectorAll(".file").forEach(file => {
+            file.addEventListener("click", () => {
+                const filePath = file.getAttribute("data-path");
+                fetch(`/file-content?filePath=${encodeURIComponent(filePath)}`)
+                    .then(res => res.text())
+                    .then(data => {
+                        document.getElementById("fileContent").innerHTML =
+                            `<h3>${file.textContent}</h3><hr><pre>${data}</pre>`;
+                    });
+            });
+        });
+    });
+</script>
+
 </body>
 </html>
