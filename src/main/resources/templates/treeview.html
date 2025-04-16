@@ -1,12 +1,43 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Directory Tree</title>
+    <title>Tree View</title>
+    <style>
+        .folder, .file {
+            margin-left: 20px;
+            cursor: pointer;
+        }
+        .nested { display: none; }
+        .active { display: block; }
+    </style>
 </head>
 <body>
-<h2>Directory Tree for: <span th:text="${path}"></span></h2>
+<h2>Filtered Java Files</h2>
 <div th:utext="${tree}"></div>
+<div id="fileContent" style="white-space: pre-wrap; border: 1px solid #ccc; padding: 10px; margin-top: 20px;"></div>
 
 <br><a href="/">Back</a>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".folder-toggle").forEach(folder => {
+            folder.addEventListener("click", () => {
+                const nested = folder.nextElementSibling;
+                if (nested) nested.classList.toggle("active");
+            });
+        });
+
+        document.querySelectorAll(".file").forEach(file => {
+            file.addEventListener("click", () => {
+                const filePath = file.getAttribute("data-path");
+                fetch(`/file-content?filePath=${encodeURIComponent(filePath)}`)
+                    .then(res => res.text())
+                    .then(data => {
+                        document.getElementById("fileContent").innerHTML = `<h3>${file.textContent}</h3><hr>${data}`;
+                    });
+            });
+        });
+    });
+</script>
 </body>
 </html>
