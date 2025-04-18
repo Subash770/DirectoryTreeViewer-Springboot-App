@@ -6,6 +6,7 @@ public class Suggestion {
     private String originalLine;
     private String optimizedLine;
     private String message;
+    private String priority;
 
     public Suggestion(String fileName, int lineNumber, String originalLine, String optimizedLine, String message) {
         this.fileName = fileName;
@@ -13,7 +14,26 @@ public class Suggestion {
         this.originalLine = originalLine;
         this.optimizedLine = optimizedLine;
         this.message = message;
+        this.priority = determinePriority(message); // Automatically assign priority
     }
+
+
+
+    // Priority decision logic
+    private String determinePriority(String message) {
+        String lower = message.toLowerCase();
+        if (lower.contains("security") || lower.contains("vulnerable") || lower.contains("unauthorized")) {
+            return "High";
+        } else if (lower.contains("performance") || lower.contains("inefficient") || lower.contains("optimize")) {
+            return "Medium";
+        } else if (lower.contains("code style") || lower.contains("readability") || lower.contains("formatting")
+                || lower.contains("exception") || lower.contains("slf4j") || lower.contains("logger")) {
+            return "Low";
+        } else {
+            return "Medium"; // default if no keywords match
+        }
+    }
+
 
     // Getters
     public String getFileName() {
@@ -34,5 +54,9 @@ public class Suggestion {
 
     public String getMessage() {
         return message;
+    }
+
+    public String getPriority() {
+        return priority;
     }
 }
