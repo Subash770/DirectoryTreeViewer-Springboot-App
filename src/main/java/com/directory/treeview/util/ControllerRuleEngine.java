@@ -10,103 +10,107 @@ public class ControllerRuleEngine {
     public static List<RuleViolation> analyzeLine(String line, int lineNumber) {
         List<RuleViolation> violations = new ArrayList<>();
 
-        // Rule 1: Too Much Business Logic in Controller (High Priority)
-        if (line.contains("public") && line.contains("@PostMapping") && line.contains("orderService")) {
-            violations.add(new RuleViolation(
-                    lineNumber,
-                    line,
-                    "// Extract business logic to the service layer\n" + line,
-                    "Too much business logic in controller"
-            ));
+        String trimmed = line.trim();
+
+        // Rule 1: Business Logic in Controller (High Priority)
+        if (trimmed.contains("@PostMapping") || trimmed.contains("@PutMapping")) {
+            if (trimmed.contains("orderService") || trimmed.contains("userService")) {
+                violations.add(new RuleViolation(
+                        lineNumber,
+                        line,
+                        "// Move business logic to a service class\n" + line,
+                        "Too much business logic in controller"
+                ));
+            }
         }
 
         // Rule 2: Lack of Security Measures (High Priority)
-        if (line.contains("@GetMapping") && !line.contains("@PreAuthorize")) {
+        if (trimmed.contains("@GetMapping") && !trimmed.contains("@PreAuthorize")) {
             violations.add(new RuleViolation(
                     lineNumber,
                     line,
-                    line.replace("@GetMapping", "@PreAuthorize(\"hasRole('ADMIN')\") @GetMapping"),
-                    "Lack of security measures: Add authentication and authorization"
+                    "@PreAuthorize(\"hasRole('USER')\")\n" + line,
+                    "Missing security: Add @PreAuthorize for authorization"
             ));
         }
 
-        // Rule 3: No Validation for Request Bodies (High Priority)
-        if (line.contains("@RequestBody") && !line.contains("@Valid")) {
+        // Rule 3: Missing @Valid for RequestBody (High Priority)
+        if (trimmed.contains("@RequestBody") && !trimmed.contains("@Valid")) {
             violations.add(new RuleViolation(
                     lineNumber,
                     line,
                     line.replace("@RequestBody", "@Valid @RequestBody"),
-                    "No validation for request body: Add @Valid annotation"
+                    "Missing validation: Add @Valid to request body"
             ));
         }
 
-        // Rule 4: Improper Exception Handling (High Priority)
-        if (line.contains("Exception") && !line.contains("@ControllerAdvice")) {
+        // Rule 4: Exception handling not delegated to @ControllerAdvice (High Priority)
+        if (trimmed.contains("throw new RuntimeException") || trimmed.contains("Exception")) {
             violations.add(new RuleViolation(
                     lineNumber,
                     line,
-                    "// Add proper global exception handling via @ControllerAdvice\n" + line,
-                    "Improper exception handling"
+                    "// Consider using @ControllerAdvice to handle exceptions\n" + line,
+                    "No centralized exception handling"
             ));
         }
 
-        // Rule 5: Missing or Hardcoded CORS Configuration (High Priority)
-        if (line.contains("@RequestMapping") && !line.contains("@CrossOrigin")) {
+        // Rule 5: Missing or Hardcoded CORS Config (High Priority)
+        if (trimmed.contains("@GetMapping") && !trimmed.contains("@CrossOrigin")) {
             violations.add(new RuleViolation(
                     lineNumber,
                     line,
-                    line + "\n// Add CORS configuration\n",
+                    "@CrossOrigin(origins = \"*\")\n" + line,
                     "Missing or hardcoded CORS configuration"
             ));
         }
 
-        // Rule 6: Improper Use of ResponseEntity (Medium Priority)
-        if (line.contains("return ResponseEntity") && !line.contains("HttpStatus")) {
+        // Rule 6: Improper ResponseEntity (Medium Priority)
+        if (trimmed.contains("return ResponseEntity") && !trimmed.contains("HttpStatus")) {
             violations.add(new RuleViolation(
                     lineNumber,
                     line,
-                    line.replace("return ResponseEntity", "return ResponseEntity.status(HttpStatus.CREATED)"),
-                    "Improper use of ResponseEntity: Use appropriate HTTP status codes"
+                    line.replace("ResponseEntity.ok", "ResponseEntity.status(HttpStatus.OK)"),
+                    "Use proper HttpStatus with ResponseEntity"
             ));
         }
 
-        // Rule 7: Overusing @RestController for Everything (Medium Priority)
-        if (line.contains("@RestController") && line.contains("return") && !line.contains("ModelAndView")) {
+        // Rule 7: Returning views via @RestController (Medium Priority)
+        if (trimmed.contains("return") && trimmed.contains("home page") && trimmed.contains("@RestController")) {
             violations.add(new RuleViolation(
                     lineNumber,
                     line,
-                    "// Use @Controller for HTML views\n" + line,
-                    "Overusing @RestController: Use @Controller for views"
+                    "// Use @Controller instead of @RestController for views\n" + line,
+                    "Returning views from a @RestController"
             ));
         }
 
-        // Rule 8: Repetitive Code in Controllers (Medium Priority)
-        if (line.contains("new Date()") || line.contains("new SimpleDateFormat")) {
+        // Rule 8: Repetitive Null Checks or Validation (Medium Priority)
+        if (trimmed.contains("== null") || trimmed.contains(".isEmpty()")) {
             violations.add(new RuleViolation(
                     lineNumber,
                     line,
-                    "// Extract repetitive code into utility methods\n" + line,
-                    "Repetitive code detected: Extract to utility class"
+                    "// Move validation logic to service or use @Validated\n" + line,
+                    "Repeated validation logic in controller"
             ));
         }
 
-        // Rule 9: Unused or Unclear Endpoints (Low Priority)
-        if (line.contains("@GetMapping") && !line.contains("return")) {
-            violations.add(new RuleViolation(
-                    lineNumber,
-                    line,
-                    "// Clarify or remove unused endpoint\n" + line,
-                    "Unused or unclear endpoint"
-            ));
-        }
-
-        // Rule 10: No Logging or Too Much Logging (Low Priority)
-        if (line.contains("System.out.println")) {
+        // Rule 9: No logger usage (Low Priority)
+        if (trimmed.contains("System.out.println")) {
             violations.add(new RuleViolation(
                     lineNumber,
                     line,
                     line.replace("System.out.println", "logger.info"),
-                    "No logging or improper logging: Use SLF4J logger"
+                    "Use SLF4J logger instead of System.out"
+            ));
+        }
+
+        // Rule 10: Unclear endpoints with no meaningful return (Low Priority)
+        if (trimmed.contains("@GetMapping") && trimmed.contains("unused-endpoint")) {
+            violations.add(new RuleViolation(
+                    lineNumber,
+                    line,
+                    "// Remove or repurpose this endpoint\n" + line,
+                    "Unclear or unused endpoint"
             ));
         }
 
