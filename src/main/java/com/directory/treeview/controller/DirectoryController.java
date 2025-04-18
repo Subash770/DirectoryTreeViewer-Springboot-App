@@ -1,5 +1,6 @@
 package com.directory.treeview.controller;
 
+import com.directory.treeview.model.ComparisonMetrics;
 import com.directory.treeview.model.Suggestion;
 import com.directory.treeview.service.CodeAnalyzerService;
 import com.directory.treeview.service.DirectoryService;
@@ -20,6 +21,7 @@ public class DirectoryController {
     private DirectoryService directoryService;
     @Autowired
     private CodeAnalyzerService codeAnalyzerService;
+
 
     @GetMapping("/")
     public String home(Model model) {
@@ -52,10 +54,17 @@ public class DirectoryController {
 
     @GetMapping("/analyze-controller")
     public String analyzeControllerCode(@RequestParam("path") String projectPath, Model model) {
+        long start = System.currentTimeMillis();
         List<Suggestion> suggestions = codeAnalyzerService.analyzeControllersInProject(projectPath);
+        long end = System.currentTimeMillis();
+
+        ComparisonMetrics metrics = codeAnalyzerService.generateComparisonMetrics(suggestions, end - start);
+
         model.addAttribute("suggestions", suggestions);
+        model.addAttribute("metrics", metrics);
         return "suggestions";
     }
+
 
 
 }
