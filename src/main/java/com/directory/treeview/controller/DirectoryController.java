@@ -5,17 +5,23 @@ import com.directory.treeview.model.Suggestion;
 import com.directory.treeview.service.CodeAnalyzerService;
 import com.directory.treeview.service.DirectoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class DirectoryController {
+
+
 
     @Autowired
     private DirectoryService directoryService;
