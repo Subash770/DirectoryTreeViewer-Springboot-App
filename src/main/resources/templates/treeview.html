@@ -192,9 +192,11 @@
     <div class="file-view">
         <h2 class="text-xl text-blue-600">Code Context</h2>
 
-        <div class="copy-btn-container">
+        <div class="copy-btn-container gap-2">
             <button id="copyBtn" class="copy-btn">Copy</button>
+            <button id="askAiBtn" class="copy-btn bg-green-600 hover:bg-green-700">Ask AI</button>
         </div>
+
 
         <div id="fileContent">
             <p class="text-center text-gray-400">Click on a file to view its content here.</p>
@@ -346,6 +348,36 @@
        chatMessages.scrollTop = chatMessages.scrollHeight;
        return messageElement;
    }
+
+    // Ask AI button logic
+document.getElementById('askAiBtn').addEventListener('click', async function () {
+    const content = document.getElementById('fileContent').textContent.trim();
+    if (!content || content.includes('Click on a file')) {
+        alert('Please select a file first.');
+        return;
+    }
+
+    // Ensure chatbot is open
+    const chatContainer = document.getElementById('chat-container');
+    if (chatContainer.classList.contains('hidden')) {
+        toggleChat(); // Show the chatbot
+    }
+
+    const prompt = `Can you review this Java code and suggest improvements?\n\n${content}`;
+    addMessageToChat('User', prompt);
+
+    try {
+        const response = await fetchStreamWithRetry('/stream?message=' + encodeURIComponent(prompt));
+        const reader = response.body.getReader();
+        const botMessageElement = addMessageToChat('Thinksy', '');
+        const contentElement = botMessageElement.querySelector('.message-content');
+        await processStream(reader, contentElement);
+    } catch (error) {
+        console.error('Error sending code to Thinksy:', error);
+        addMessageToChat('System', '⚠️ Error while analyzing code. Try again.');
+    }
+});
+
 </script>
 </body>
 </html>
