@@ -26,14 +26,15 @@
         <p class="text-gray-500">Automatically optimize your project and generate analysis reports.</p>
     </div>
 
-    <!-- View Folder Form -->
-    <form method="post" action="/view-folder" class="space-y-5">
+    <form method="post" action="/view-folder" class="space-y-6">
+        <!-- Shared Project Path Input -->
         <div>
             <label class="block text-gray-700 font-medium mb-1">🔍 Project Path</label>
             <input type="text" name="path" placeholder="Enter project path" required
                    class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
         </div>
 
+        <!-- Folder Selection -->
         <div>
             <p class="text-gray-700 font-medium mb-1">📁 Select Folders</p>
             <div class="flex flex-wrap gap-4">
@@ -56,26 +57,17 @@
             </div>
         </div>
 
-        <button type="submit"
-                class="w-full bg-blue-600 text-white font-semibold py-2 rounded-xl hover:bg-blue-700 transition duration-200 shadow-md">
-            📂 View Files
-        </button>
-    </form>
-
-    <div class="border-t border-gray-200"></div>
-
-    <!-- Analyze Controller Form -->
-    <form method="get" action="/analyze-controller" class="space-y-5">
-        <div>
-            <label class="block text-gray-700 font-medium mb-1">🚀 Project Path</label>
-            <input type="text" name="path" placeholder="Enter project path" required
-                   class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400">
+        <!-- Buttons in Two Columns -->
+        <div class="flex flex-col sm:flex-row gap-4">
+            <button formaction="/view-folder" type="submit"
+                    class="w-full sm:w-1/2 bg-blue-600 text-white font-semibold py-2 rounded-xl hover:bg-blue-700 transition duration-200 shadow-md">
+                📂 View Files
+            </button>
+            <button formaction="/analyze-controller" formmethod="get"
+                    class="w-full sm:w-1/2 bg-green-600 text-white font-semibold py-2 rounded-xl hover:bg-green-700 transition duration-200 shadow-md">
+                ✅ Optimize Code
+            </button>
         </div>
-
-        <button type="submit"
-                class="w-full bg-green-600 text-white font-semibold py-2 rounded-xl hover:bg-green-700 transition duration-200 shadow-md">
-            ✅ Optimize Code
-        </button>
     </form>
 </div>
 
